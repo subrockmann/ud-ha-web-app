@@ -138,9 +138,8 @@ Resources:
           !Sub "${EnvironmentName}-PRIV-NETS" 
       LaunchConfigurationName:
         Ref: WebAppLaunchConfig
-      MinSize: '2'          ## TODO increase this after testing
-      MaxSize: '2'          ## TODO increase this after testing
-      DesiredCapacity: 2    ## TODO increase this after testing
+      MinSize: '4'          ## TODO increase this after testing
+      MaxSize: '6'          ## TODO increase this after testing
       TargetGroupARNs:
         - Ref: WebAppTargetGroup
 
