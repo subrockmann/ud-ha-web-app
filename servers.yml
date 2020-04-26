@@ -12,6 +12,7 @@ Parameters:
 
 
 Resources:
+##
   MyRole: 
     Type: "AWS::IAM::Role"
     Properties: 
@@ -50,6 +51,8 @@ Resources:
         - 
           Ref: "MyRole"
 
+
+###
   LBSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties: 
@@ -97,16 +100,22 @@ Resources:
     Properties:
       UserData:
         Fn::Base64: !Sub |
+          #!/bin/bash
           apt-get update -y
           apt-get install unzip awscli -y
           apt-get install apache2 -y
           systemctl start apache2.service
+
           cd /var/www/html
           aws s3 cp s3://udacity-demo-1/udacity.zip .
           unzip -o udacity.zip
 
+          systemctl restart apache2.service
+
+      #ImageId: ami-07b4f3c02c7f83d59
       ImageId: ami-0b418580298265d5c
       IamInstanceProfile: !Ref ProfileWithRolesForOurApp
+      #IamInstanceProfile: ProfileWithRolesForOurApp
       SecurityGroups:
       - Ref: WebServerSecGroup
       InstanceType: t3.small
@@ -138,8 +147,8 @@ Resources:
           !Sub "${EnvironmentName}-PRIV-NETS" 
       LaunchConfigurationName:
         Ref: WebAppLaunchConfig
-      MinSize: '4'          ## TODO increase this after testing
-      MaxSize: '6'          ## TODO increase this after testing
+      MinSize: '2'          ## TODO increase this after testing
+      MaxSize: '2'          ## TODO increase this after testing
       TargetGroupARNs:
         - Ref: WebAppTargetGroup
 
@@ -186,3 +195,5 @@ Outputs:
   WebsiteURL:
     Description: The Public URL for accessing the Website
     Value: !Join ["", ["http://", !GetAtt WebAppLB.DNSName]]
+    Export: 
+        Name: !Sub ${EnvironmentName}-URL
